@@ -142,7 +142,7 @@ contours(JNIEnv *env, const int arr[], int width, int height, int backgroundColo
 jobjectArray convertToObjectArray(JNIEnv *env, vector<ShadowPath> shadowPaths) {
     jclass shadowPathClass = (env)->FindClass("com/sdsmdg/harjot/longshadows/models/ShadowPath");
     jobjectArray shadowObjectArray = (env)->NewObjectArray(shadowPaths.size(), shadowPathClass,
-                                                           NULL);
+                                                           nullptr);
     jmethodID shadowClassConstructor = (env)->GetMethodID(shadowPathClass, "<init>",
                                                           "([Lcom/sdsmdg/harjot/longshadows/models/Point2D;"
                                                                   "Lcom/sdsmdg/harjot/longshadows/models/Point2D;"
@@ -153,11 +153,10 @@ jobjectArray convertToObjectArray(JNIEnv *env, vector<ShadowPath> shadowPaths) {
     jobject shadowPathObject;
 
     for (int i = 0; i < shadowPaths.size(); i++) {
-
         vector<pair<int, int> > points = shadowPaths[i].points;
 
         jclass pointClass = (env)->FindClass("com/sdsmdg/harjot/longshadows/models/Point2D");
-        jobjectArray pointArray = (env)->NewObjectArray(points.size(), pointClass, NULL);
+        jobjectArray pointArray = (env)->NewObjectArray(points.size(), pointClass, nullptr);
         jmethodID pointClassConstructor = (env)->GetMethodID(pointClass, "<init>", "(II)V");
         jobject pointObject;
 
@@ -274,9 +273,9 @@ vector<pair<int, int> > getPolarOrder(vector<pair<int, int> > path, pair<int, in
 
     int minx = 1000000009, maxx = -1000000009;
 
-    for (int i = 0; i < path.size(); i++) {
-        minx = min(minx, path[i].first);
-        maxx = max(maxx, path[i].first);
+    for (auto & i : path) {
+        minx = min(minx, i.first);
+        maxx = max(maxx, i.first);
     }
 
     // LOG
@@ -286,9 +285,9 @@ vector<pair<int, int> > getPolarOrder(vector<pair<int, int> > path, pair<int, in
     if (ref.first >= minx && ref.first <= maxx)
         flag = true;
 
-    for (int i = 0; i < path.size(); i++) {
-        H = path[i].second - ref.second;
-        B = path[i].first - ref.first;
+    for (auto & i : path) {
+        H = i.second - ref.second;
+        B = i.first - ref.first;
 
         dist = H * H + B * B;
 
@@ -297,25 +296,25 @@ vector<pair<int, int> > getPolarOrder(vector<pair<int, int> > path, pair<int, in
         if (angle > 0.0 && flag)
             angle -= PI;
 
-        polarOrder.push_back(make_pair(make_pair(angle, dist), path[i]));
+        polarOrder.push_back(make_pair(make_pair(angle, dist), i));
     }
 
     vector<pair<pair<long double, long double>, pair<int, int> > > temp;
     temp.clear();
 
-    for (int i = 0; i < polarOrder.size(); i++) {
+    for (auto & i : polarOrder) {
         if (temp.empty())
-            temp.push_back(polarOrder[i]);
-        else if (temp[temp.size() - 1].first.first > polarOrder[i].first.first)
-            temp.push_back(polarOrder[i]);
-        while (!temp.empty() && temp[temp.size() - 1].first.second > polarOrder[i].first.second &&
-               temp[temp.size() - 1].first.first < polarOrder[i].first.first)
+            temp.push_back(i);
+        else if (temp[temp.size() - 1].first.first > i.first.first)
+            temp.push_back(i);
+        while (!temp.empty() && temp[temp.size() - 1].first.second > i.first.second &&
+               temp[temp.size() - 1].first.first < i.first.first)
             temp.pop_back();
     }
 
     path.clear();
-    for (int i = 0; i < temp.size(); i++)
-        path.push_back(temp[i].second);
+    for (auto & i : temp)
+        path.push_back(i.second);
 
     return path;
 }
@@ -334,7 +333,7 @@ long double getArea(vector<pair<int, int> > path, pair<int, int> ref) {
 }
 
 vector<pair<int, int> > getLargestComponent(set<pair<int, int> > Graph) {
-    assert(Graph.size() > 0);
+    assert(!Graph.empty());
 
     vector<pair<int, int> > component;
     vector<pair<int, int> > now;
@@ -343,7 +342,7 @@ vector<pair<int, int> > getLargestComponent(set<pair<int, int> > Graph) {
     map<pair<int, int>, bool> visited;
     visited.clear();
 
-    for (set<pair<int, int> >::iterator it = Graph.begin(); it != Graph.end(); it++) {
+    for (auto it = Graph.begin(); it != Graph.end(); it++) {
         if (visited[*it])
             continue;
 
@@ -382,8 +381,8 @@ vector<pair<int, int> > getLargestComponent(set<pair<int, int> > Graph) {
 
         if (component.size() < now.size()) {
             component.clear();
-            for (int i = 0; i < now.size(); i++)
-                component.push_back(now[i]);
+            for (const auto & i : now)
+                component.push_back(i);
         }
     }
 
@@ -431,21 +430,21 @@ vector<pair<int, int> > getOuterBoundary(pair<int, int> src, set<pair<int, int> 
     return outerBoundary;
 }
 
-vector<pair<int, int> > boundaryPath(vector<pair<int, int> > pts, pair<int, int> ref, int what) {
+vector<pair<int, int> > boundaryPath(const vector<pair<int, int> >& pts, pair<int, int> ref, int what) {
     set<pair<int, int> > boundary;
     boundary.clear();
 
-    for (int i = 0; i < pts.size(); i++)
-        boundary.insert(pts[i]);
+    for (auto & pt : pts)
+        boundary.insert(pt);
 
     vector<pair<long double, pair<int, int> > > polarOrder;
     polarOrder.clear();
 
     int minx = 1000000009, maxx = -1000000009;
 
-    for (set<pair<int, int> >::iterator it = boundary.begin(); it != boundary.end(); it++) {
-        minx = min(minx, it->first);
-        maxx = max(maxx, it->first);
+    for (const auto & it : boundary) {
+        minx = min(minx, it.first);
+        maxx = max(maxx, it.first);
     }
 
     // LOG
@@ -458,15 +457,15 @@ vector<pair<int, int> > boundaryPath(vector<pair<int, int> > pts, pair<int, int>
     long double angle;
     long double H, B;
 
-    for (set<pair<int, int> >::iterator it = boundary.begin(); it != boundary.end(); it++) {
-        H = (it->second) - ref.second;
-        B = (it->first) - ref.first;
+    for (const auto & it : boundary) {
+        H = (it.second) - ref.second;
+        B = (it.first) - ref.first;
         angle = atan(H / B);
 
         if (angle > 0.0 && flag1)
             angle -= PI;
 
-        polarOrder.push_back(make_pair(angle, *it));
+        polarOrder.push_back(make_pair(angle, it));
     }
 
     sort(polarOrder.begin(), polarOrder.end());
@@ -478,37 +477,37 @@ vector<pair<int, int> > boundaryPath(vector<pair<int, int> > pts, pair<int, int>
     vector<pair<int, int> > outerBoundary = getOuterBoundary(tangent1, boundary);
 
     boundary.clear();
-    for (int i = 0; i < outerBoundary.size(); i++)
-        boundary.insert(outerBoundary[i]);
+    for (auto & i : outerBoundary)
+        boundary.insert(i);
 
     vector<pair<int, int> > path1 = getPath(tangent1, tangent2, boundary);
 
     vector<pair<int, int> > path2;
     path2.clear();
 
-    for (int i = 0; i < path1.size(); i++)
-        boundary.erase(path1[i]);
+    for (auto & i : path1)
+        boundary.erase(i);
 
-    for (set<pair<int, int> >::iterator it = boundary.begin(); it != boundary.end(); it++)
-        path2.push_back(*it);
+    for (const auto & it : boundary)
+        path2.push_back(it);
 
     vector<pair<int, int> > component = getLargestComponent(boundary);
 
     boundary.clear();
-    for (int i = 0; i < component.size(); i++)
-        boundary.insert(component[i]);
+    for (auto & i : component)
+        boundary.insert(i);
 
     polarOrder.clear();
-    for (set<pair<int, int> >::iterator it = boundary.begin(); it != boundary.end(); it++) {
-        H = (it->second) - ref.second;
-        B = (it->first) - ref.first;
+    for (const auto & it : boundary) {
+        H = (it.second) - ref.second;
+        B = (it.first) - ref.first;
 
         angle = atan(H / B);
 
         if (angle > 0.0 && flag1)
             angle -= PI;
 
-        polarOrder.push_back(make_pair(angle, *it));
+        polarOrder.push_back(make_pair(angle, it));
     }
 
     sort(polarOrder.begin(), polarOrder.end());
@@ -534,14 +533,14 @@ vector<pair<int, int> > boundaryPath(vector<pair<int, int> > pts, pair<int, int>
     fullPath.clear();
     fullPathPolarOrder.clear();
 
-    for (int i = 0; i < path1.size(); i++)
-        fullPath.push_back(path1[i]);
+    for (const auto & i : path1)
+        fullPath.push_back(i);
 
     for (int i = path2.size() - 1; i >= 0; i--)
         fullPath.push_back(path2[i]);
 
-    for (int i = 0; i < path1PolarOrder.size(); i++)
-        fullPathPolarOrder.push_back(path1PolarOrder[i]);
+    for (const auto & i : path1PolarOrder)
+        fullPathPolarOrder.push_back(i);
 
     for (int i = path2PolarOrder.size() - 1; i >= 0; i--)
         fullPathPolarOrder.push_back(path2PolarOrder[i]);
@@ -583,16 +582,16 @@ double getDistance(pair<int, int> pointOne, pair<int, int> pointTwo) {
             pow((pointOne.second - pointTwo.second), 2));
 }
 
-pair<int, int> getClosestPointToLight(vector<pair<int, int> > points, pair<int, int> ref) {
+pair<int, int> getClosestPointToLight(const vector<pair<int, int> >& points, pair<int, int> ref) {
     pair<int, int> closestPoint;
 
     double minDistance = INT_MAX;
 
-    for (int i = 0; i < points.size(); i++) {
-        double distance = getDistance(ref, points[i]);
+    for (auto & point : points) {
+        double distance = getDistance(ref, point);
         if (distance < minDistance) {
             minDistance = distance;
-            closestPoint = points[i];
+            closestPoint = point;
         }
     }
 
@@ -614,8 +613,8 @@ getShadowPathsFromContour(vector<pair<int, int> > points, int width, int height,
 
     vector<pair<int, int> > pathPoints;
 
-    for (int i = 0; i < boundary_front_polar.size(); i++) {
-        pathPoints.push_back(boundary_front_polar[i]);
+    for (const auto & i : boundary_front_polar) {
+        pathPoints.push_back(i);
     }
 
     pair<int, int> translatedPointOne = boundary_front_polar[0];
@@ -654,12 +653,12 @@ getShadowPathsFromContour(vector<pair<int, int> > points, int width, int height,
     return shadowPath;
 }
 
-pair<int, int> getReferencePointFromContour(vector<pair<int, int> > contour, float angle) {
+pair<int, int> getReferencePointFromContour(const vector<pair<int, int> >& contour, float angle) {
     int x = 0, y = 0;
 
-    for (int i = 0; i < contour.size(); i++) {
-        x += contour[i].first;
-        y += contour[i].second;
+    for (auto & i : contour) {
+        x += i.first;
+        y += i.second;
     }
 
     x = (int) (x / contour.size());
@@ -685,22 +684,21 @@ Java_com_sdsmdg_harjot_longshadows_shadowutils_LongShadowsGenerator_getShadowPat
     vector<vector<pair<int, int> > > ans;
     ans.clear();
 
-    jint *c_array = (env)->GetIntArrayElements(arr, NULL);
-    jfloat *angles_array = (env)->GetFloatArrayElements(angles, NULL);
-    jint *shadow_lengths = (env)->GetIntArrayElements(shadowLengths, NULL);
+    jint *c_array = (env)->GetIntArrayElements(arr, nullptr);
+    jfloat *angles_array = (env)->GetFloatArrayElements(angles, nullptr);
+    jint *shadow_lengths = (env)->GetIntArrayElements(shadowLengths, nullptr);
     ans = contours(env, c_array, width, height, backgroundColor);
 
     vector<ShadowPath> shadowPaths;
-    for (int i = 0; i < ans.size(); i++) {
+    for (auto & an : ans) {
         for (int j = 0; j < numAngles; j++) {
             shadowPaths.push_back(
-                    getShadowPathsFromContour(ans[i], width, height, angles_array[j],
+                    getShadowPathsFromContour(an, width, height, angles_array[j],
                                               shadow_lengths[j],
-                                              getReferencePointFromContour(ans[i],
+                                              getReferencePointFromContour(an,
                                                                            angles_array[j])));
         }
     }
 
     return convertToObjectArray(env, shadowPaths);
 }
-
