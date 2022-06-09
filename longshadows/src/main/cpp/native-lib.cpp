@@ -116,7 +116,7 @@ contours(JNIEnv *env, const int arr[], int width, int height, int backgroundColo
                     }
 
                     if (flag)
-                        temp.push_back(make_pair(y, x));
+                        temp.emplace_back(y, x);
 
                     q.push(make_pair(x - 1, y - 1));
                     q.push(make_pair(x - 1, y));
@@ -296,7 +296,7 @@ vector<pair<int, int> > getPolarOrder(vector<pair<int, int> > path, pair<int, in
         if (angle > 0.0 && flag)
             angle -= PI;
 
-        polarOrder.push_back(make_pair(make_pair(angle, dist), i));
+        polarOrder.emplace_back(make_pair(angle, dist), i);
     }
 
     vector<pair<pair<long double, long double>, pair<int, int> > > temp;
@@ -465,7 +465,7 @@ vector<pair<int, int> > boundaryPath(const vector<pair<int, int> >& pts, pair<in
         if (angle > 0.0 && flag1)
             angle -= PI;
 
-        polarOrder.push_back(make_pair(angle, it));
+        polarOrder.emplace_back(angle, it);
     }
 
     sort(polarOrder.begin(), polarOrder.end());
@@ -507,7 +507,7 @@ vector<pair<int, int> > boundaryPath(const vector<pair<int, int> >& pts, pair<in
         if (angle > 0.0 && flag1)
             angle -= PI;
 
-        polarOrder.push_back(make_pair(angle, it));
+        polarOrder.emplace_back(angle, it);
     }
 
     sort(polarOrder.begin(), polarOrder.end());
@@ -545,36 +545,22 @@ vector<pair<int, int> > boundaryPath(const vector<pair<int, int> >& pts, pair<in
     for (int i = path2PolarOrder.size() - 1; i >= 0; i--)
         fullPathPolarOrder.push_back(path2PolarOrder[i]);
 
-    bool flag = false;
-    if (area1 < area2)
-        flag = true;
+    bool flag = (area1 < area2);
 
-    if (what == 0) { // Front Path
-        if (flag)
-            return path1;
-        return path2;
-    }
-    if (what == 1) { // Front Polar Path
-        if (flag)
-            return path1PolarOrder;
-        return path2PolarOrder;
-    }
-    if (what == 2) { // Back Path
-        if (!flag)
-            return path1;
-        return path2;
-    }
-    if (what == 3) { // Back Polar Path
-        if (!flag)
-            return path1PolarOrder;
-        return path2PolarOrder;
-    }
-
-    if (what == 4) // Full Path
+    switch (what) {
+    case 0: // Front Path
+        return flag ? path1 : path2;
+    case 1: // Front Polar Path
+        return flag ? path1PolarOrder : path2PolarOrder;
+    case 2: // Back Path
+        return flag ? path2 : path1;
+    case 3: // Back Polar Path
+        return flag ? path2PolarOrder : path1PolarOrder;
+    case 4: // Full Path
         return fullPath;
-
-    if (what == 5) // Full Polar Path
+    case 5: // Full Polar Path
         return fullPathPolarOrder;
+    }
 }
 
 double getDistance(pair<int, int> pointOne, pair<int, int> pointTwo) {

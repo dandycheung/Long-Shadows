@@ -14,7 +14,6 @@ import com.sdsmdg.harjot.longshadows.LongShadowsView;
  */
 
 public class CustomLongShadowsView extends LongShadowsView {
-
     Paint paint;
 
     public CustomLongShadowsView(Context context) {
@@ -31,7 +30,7 @@ public class CustomLongShadowsView extends LongShadowsView {
         this.init();
     }
 
-    void init(){
+    void init() {
         paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.WHITE);
@@ -40,7 +39,7 @@ public class CustomLongShadowsView extends LongShadowsView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawCircle(getWidth()/ 2, getHeight()/2,100, paint);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2,100, paint);
         canvas.drawRect(100, 100, 300, 300, paint);
     }
 }
